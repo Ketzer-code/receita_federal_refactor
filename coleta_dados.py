@@ -65,7 +65,9 @@ def insert_data(
     db: sqlite3.Connection, colnames: list
     ) -> None:
     
-    cur.execute("DROP TABLE IF EXISTS {tablename};".format(tablename = table))
+    cur = db.cursor()
+    
+    #cur.execute("DROP TABLE IF EXISTS {tablename};".format(tablename = table))
     
     for i in range(len(df_dict[key])):
         print("Working on file" + " " + df_dict[key][i])
@@ -74,7 +76,9 @@ def insert_data(
             st.PATH_BASES + "/extraido/" + df_dict[key][i],
             sep = ";",
             skiprows = 0,
-            header = None
+            header = None,
+            encoding = "latin",
+            low_memory = False
         )
 
         df = df.reset_index()
@@ -83,7 +87,7 @@ def insert_data(
 
         df.columns = colnames
 
-        colnames.to_sql(name = table, con = db, if_exists = "append", index = False)
+        df.to_sql(name = table, con = db, if_exists = "append", index = False)
 
 #%%
 # inserindo dados de empresas
@@ -204,3 +208,4 @@ CREATE INDEX simples_cnpj ON simples(cnpj_basico);
 """)
 
 conn.commit()
+# %%
